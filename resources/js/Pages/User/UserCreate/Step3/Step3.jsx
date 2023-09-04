@@ -1,60 +1,41 @@
-// resources/js/Pages/User/UserCreate/Step3/Step3.jsx
-import { Input, Button } from "@material-tailwind/react";
-import React, { useState } from "react";
 import cn from "classnames";
-import "./Tags.scss";
-import { COUNTRIES } from "./countries";
-import { WithContext as ReactTags } from "react-tag-input";
-
-const suggestions = COUNTRIES.map((country) => {
-  return {
-    id: country,
-    text: country,
-  };
-});
-
-const KeyCodes = {
-  comma: 188,
-  enter: 13,
-};
+import { Button, Input, Select, Option } from "@material-tailwind/react";
+import Grid from "@/Components/Grid/Grid";
+import languages from "./languages";
+import InputFieldGroup from "./InputFieldGroup/InputFieldGroup";
 
 const Step3 = ({ formik, className }) => {
-  const [tags, setTags] = React.useState([
-    { id: "Thailand", text: "Thailand" },
-    { id: "India", text: "India" },
-    { id: "Vietnam", text: "Vietnam" },
-    { id: "Turkey", text: "Turkey" },
-  ]);
-
-  const handleDelete = (i) => {
-    setTags(tags.filter((tag, index) => index !== i));
+  const handleInputChange = (value, index, field) => {
+    const newValues = [...formik.values[field]];
+    newValues[index] = value;
+    formik.setFieldTouched(`${field}[${index}]`, true);
+    formik.setFieldValue(field, newValues);
   };
-
-  const handleAddition = (tag) => {
-    setTags([...tags, tag]);
-  };
-
-  const handleDrag = (tag, currPos, newPos) => {
-    const newTags = tags.slice();
-
-    newTags.splice(currPos, 1);
-    newTags.splice(newPos, 0, tag);
-
-    // re-render
-    setTags(newTags);
-  };
-
-  const handleTagClick = (index) => {
-    console.log("The tag at index " + index + " was clicked");
-  };
-
   return (
-    <div className='app'>
-      <h1> React Tags Example </h1>
-      <div>
-        <ReactTags tags={tags} suggestions={suggestions} delimiters={delimiters} handleDelete={handleDelete} handleAddition={handleAddition} handleDrag={handleDrag} handleTagClick={handleTagClick} inputFieldPosition='bottom' autocomplete editable />
-      </div>
+    <div className={cn(className, "flex flex-col gap-4")}>
+      <Grid className='grid-cols-3 gap-4 items-start justify-start'>
+        <InputFieldGroup formik={formik} field='profession' label='Profession'>
+          {(value, index) => <Input onChange={(e) => handleInputChange(e.target.value, index, "profession")} label='Profession' variant='standard' value={value} />}
+        </InputFieldGroup>
+
+        <InputFieldGroup formik={formik} field='skill' label='Skill'>
+          {(value, index) => <Input onChange={(e) => handleInputChange(e.target.value, index, "skill")} label='Skill' variant='standard' value={value} />}
+        </InputFieldGroup>
+
+        <InputFieldGroup formik={formik} field='language' label='Language'>
+          {(value, index) => (
+            <Select onChange={(newValue) => handleInputChange(newValue, index, "language")} label='Language' variant='standard'>
+              {languages.map((language) => (
+                <Option key={language.code} value={language.name}>
+                  {language.name}
+                </Option>
+              ))}
+            </Select>
+          )}
+        </InputFieldGroup>
+      </Grid>
     </div>
   );
 };
+
 export default Step3;

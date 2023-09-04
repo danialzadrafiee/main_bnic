@@ -1,7 +1,7 @@
 // resources/js/Pages/User/UserCreate/SelectBirthdayDay/SelectBirthdayDay.jsx
 
 import React, { useEffect, useState } from "react";
-import { Select, Option } from "@material-tailwind/react";
+import { Select, Option, Typography } from "@material-tailwind/react";
 const SelectBirthdayDay = ({ props, formik, className }) => {
   useEffect(() => {
     const numberOfDays = birthday_daysInMonth(formik.values.birthday_month, formik.values.year);
@@ -38,6 +38,9 @@ const SelectBirthdayDay = ({ props, formik, className }) => {
           </Option>
         ))}
       </Select>
+      <Typography variant='small' color='red'>
+        {formik.touched[birthday_days] && formik.errors[birthday_days] ? <>{formik.errors[birthday_days]}</> : " "}
+      </Typography>
     </>
   );
 };

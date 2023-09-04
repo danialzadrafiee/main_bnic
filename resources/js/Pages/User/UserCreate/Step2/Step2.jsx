@@ -5,8 +5,7 @@ import { Country } from "country-state-city";
 import { Input, Button, Select, Option } from "@material-tailwind/react";
 import Grid from "@/Components/Grid/Grid";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faTrash} from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Flex from "@/Components/Flex/Flex";
 import cn from "classnames";
 
@@ -14,6 +13,7 @@ const Step2 = ({ formik, className }) => {
   const [countries, setCountries] = useState([]);
   const [universities, setUniversities] = useState([]);
   const emptyUniversity = ["-"];
+
   useEffect(() => {
     setCountries(Country.getAllCountries());
     axios.get("/csv/world-universities.csv").then((response) => {
@@ -29,6 +29,7 @@ const Step2 = ({ formik, className }) => {
         });
     });
   }, []);
+
   const handleInputChange = (value, index, field) => {
     const newEducation = [...formik.values.education];
     newEducation[index][field] = value;
@@ -36,8 +37,10 @@ const Step2 = ({ formik, className }) => {
   };
 
   const addSection = () => {
-    const newEducation = [...formik.values.education, { country: "", university: "", field: "", degree: "" }];
-    formik.setFieldValue("education", newEducation);
+    if (formik.values.education.length < 3) {
+      const newEducation = [...formik.values.education, { country: "", university: "", field: "", degree: "" }];
+      formik.setFieldValue("education", newEducation);
+    }
   };
 
   const removeSection = (index) => {
@@ -75,15 +78,17 @@ const Step2 = ({ formik, className }) => {
           <Input variant='standard' label='Education Field' name='field' onChange={(e) => handleInputChange(e.target.value, index, "field")} />
           <Input variant='standard' label='Education Degree' name='degree' onChange={(e) => handleInputChange(e.target.value, index, "degree")} />
           <div></div>
-          <Flex className={"gap-2 justify-end"}>
+          <Flex className={"gap-1 justify-end"}>
             {index !== 0 ? (
-              <Button size='sm' variant="outlined" className='w-max' onClick={() => removeSection(index)}>
+              <Button size='sm' className='p-2 px-2.5' onClick={() => removeSection(index)}>
                 <FontAwesomeIcon icon={faTrash} />
               </Button>
             ) : null}
-            <Button size='sm'  color='gray' className='w-max' onClick={addSection}>
-              <FontAwesomeIcon icon={faPlus} />
-            </Button>
+            {index === formik.values.education.length - 1 && formik.values.education.length < 3 && (
+              <Button size='sm' color='teal' className='p-2 px-2.5' onClick={addSection}>
+                <FontAwesomeIcon icon={faPlus} />
+              </Button>
+            )}
           </Flex>
         </Grid>
       ))}
